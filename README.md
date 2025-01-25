@@ -1,7 +1,29 @@
 # Traffic Flow Prediction Based on Temporal Attention and Multi-Graph Adjacency Fusion Using DynamicChebNet
 ___
-![Image](./figure/Framework.png)
-![Image](./figure/Temporal_Feature_Extraction_Block.png)
+
+<div style="text-align:center;">
+
+  # Welcome!
+  
+  Thank you for reading this document!  
+  If you have any questions or suggestions, please feel free to reach out:
+  
+  **Email**: [357238107@qq.com](mailto:357238107@qq.com)
+
+</div>
+
+## Figure
+___
+<div style="text-align: center;">
+  <img src="./figure/Framework.png" alt="Framework" width="600"/>
+  <p style="text-align:center;">Figure 1: Framework of the model</p>
+</div>
+
+<div style="text-align: center;">
+  <img src="./figure/Temporal_Feature_Extraction_Block.png" alt="Temporal Feature Extraction Block" width="600"/>
+  <p style="text-align:center;">Figure 2: Temporal Feature Extraction Block</p>
+</div>
+
 ## Requirement
 ___
 The experiments were conducted using an RTX 3090GPU for training, based on Ubuntu 20.04, with Pytorch 2.0.0 and Python 3.8 for implementing the TMDCN model.
@@ -60,7 +82,7 @@ ___
             |- exp-2
             |- exp-3
             |- ...
-    - feature_matrix.py (This code is based on the open-source project: https://github.com/guoshnBJTU/ASTGCN-2019-pytorch)
+    - feature_matrix.py
     - static_adj_matrix.py
     - train.py
 ```
@@ -69,6 +91,8 @@ ___
 - download PEMS04 and PEMS08 datasets provided by [ASTGNN](https://github.com/guoshnBJTU/ASTGNN/tree/main/data).
 - taking PEMS04 as an example, you must place the downloaded PEMS04.csv and PEMS04.npz files into the PEMS04 folder under the dataset directory.
 - run feature_matrix.py and static_adj_matrix.py to generate PEMS04_cost_adj_matrix.pt, PEMS04_similarity_adj_matrix.pt, and PEMS04_w1_d1_h1.npz.
+> feature_matrix.py based on the open-source project: [ASTGCN-2019-pytorch](https://github.com/guoshnBJTU/ASTGCN-2019-pytorch)
+
 ## Train
 ___
 - on PEMS04 dataset:
