@@ -1,15 +1,8 @@
 # Traffic Flow Prediction Based on Temporal Attention and Multi-Graph Adjacency Fusion Using DynamicChebNet
 
-<div style="text-align:center;">
-
-  # Welcome!
-  
   Thank you for reading this document!  
   If you have any questions or suggestions, please feel free to reach out:
-  
   **Email**: [357238107@qq.com](mailto:357238107@qq.com)
-
-</div>
 
 ## Figure
 
