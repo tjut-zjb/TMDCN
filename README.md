@@ -83,9 +83,9 @@ To install pytorch-geometric, follow these steps:<br>
 
 ## Dataset
 
-- download PEMS04 and PEMS08 datasets provided by [ASTGNN](https://github.com/guoshnBJTU/ASTGNN/tree/main/data).
-- taking PEMS04 as an example, you must place the downloaded PEMS04.csv and PEMS04.npz files into the PEMS04 folder under the dataset directory.
-- run feature_matrix.py and static_adj_matrix.py to generate PEMS04_cost_adj_matrix.pt, PEMS04_similarity_adj_matrix.pt, and PEMS04_w1_d1_h1.npz.
+- The dataset link is [Google Drive](https://drive.google.com/drive/folders/1qjtk8cjvnpc5M86muWlZQUXt6LUEQACr?usp=sharing) or [Caltrans PeMS](https://pems.dot.ca.gov./).
+- Taking PEMS04 as an example, you must place the downloaded PEMS04.csv and PEMS04.npz files into the PEMS04 folder under the dataset directory.
+- Run feature_matrix.py and static_adj_matrix.py to generate PEMS04_cost_adj_matrix.pt, PEMS04_similarity_adj_matrix.pt, and PEMS04_w1_d1_h1.npz.
 > feature_matrix.py based on the open-source project: [ASTGCN-2019-pytorch](https://github.com/guoshnBJTU/ASTGCN-2019-pytorch)
 
 ## Train
