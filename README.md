@@ -63,8 +63,8 @@ To install pytorch-geometric, follow these steps:<br>
         |- utils.py
     |- model
         - ...
-    |- run
-        |- train (Directory containing training-related outputs and configurations)
+    |- run (Directory containing training-related outputs and configurations)
+        |- train
             |- exp-1 (training name)
                 |- tensorboard
                     - ...
