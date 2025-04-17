@@ -42,7 +42,7 @@ seed = int(train_config['seed'])
 learning_rate = float(train_config['learning_rate'])
 weight_decay = float(train_config['weight_decay'])
 batch_size = int(train_config['batch_size'])
-epoch = int(train_config['epoch'])
+epochs = int(train_config['epochs'])
 dropout = float(train_config['dropout'])
 embed_dim = int(train_config['embed_dim'])
 attention_num_layer = int(train_config['attention_num_layer'])
@@ -134,7 +134,7 @@ set_seed(seed)
 criterion = nn.HuberLoss().to(device)
 optimizer = torch.optim.AdamW([param for layer in models.values() for param in layer.parameters()],
                               lr=learning_rate, weight_decay=weight_decay)
-scheduler = CosineAnnealingLR(optimizer, T_max=epoch, eta_min=0)
+scheduler = CosineAnnealingLR(optimizer, T_max=epochs, eta_min=0)
 
 # ================================ Train ================================
 for layer in models.values():
@@ -155,10 +155,10 @@ if continue_training:
 else:
     logging.info(f"this training is a new training {save_dir}")
 
-for epoch in range(start_epoch, epoch):
+for epoch in range(start_epoch, epochs):
     train_start_time = time.time()
 
-    logging.info(f"{'*' * 32}Epoch:{epoch + 1}/{epoch}{'*' * 32}")
+    logging.info(f"{'*' * 32}Epoch:{epoch + 1}/{epochs}{'*' * 32}")
 
     for layer in models.values():
         layer.train()
