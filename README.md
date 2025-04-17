@@ -1,19 +1,12 @@
 # Traffic Flow Prediction Based on Temporal Attention and Multi-Graph Adjacency Fusion Using DynamicChebNet
-___
 
-<div style="text-align:center;">
-
-  # Welcome!
-  
   Thank you for reading this document!  
   If you have any questions or suggestions, please feel free to reach out:
   
   **Email**: [357238107@qq.com](mailto:357238107@qq.com)
 
-</div>
-
 ## Figure
-___
+
 <div style="text-align: center;">
   <img src="./figure/Framework.png" alt="Framework" width="600"/>
   <p style="text-align:center;">Figure 1: Framework of the model</p>
@@ -25,7 +18,7 @@ ___
 </div>
 
 ## Requirement
-___
+
 The experiments were conducted using an RTX 3090GPU for training, based on Ubuntu 20.04, with Pytorch 2.0.0 and Python 3.8 for implementing the TMDCN model.
 
 Please make sure you have installed Python and PyTorch correctly. Then you can install all the dependencies with the following command by pip:
@@ -44,8 +37,9 @@ To install pytorch-geometric, follow these steps:<br>
   ```shell
   pip install torch_geometric
   ```
+
 ## Structure
-___
+
 ``` 
 |- TMDCN
     |- configuration (Configuration File, you can configure all parameters related to training)
@@ -69,8 +63,8 @@ ___
         |- utils.py
     |- model
         - ...
-    |- run
-        |- train (Directory containing training-related outputs and configurations)
+    |- run (Directory containing training-related outputs and configurations)
+        |- train
             |- exp-1 (training name)
                 |- tensorboard
                     - ...
@@ -86,15 +80,16 @@ ___
     - static_adj_matrix.py
     - train.py
 ```
+
 ## Dataset
-___
-- download PEMS04 and PEMS08 datasets provided by [ASTGNN](https://github.com/guoshnBJTU/ASTGNN/tree/main/data).
-- taking PEMS04 as an example, you must place the downloaded PEMS04.csv and PEMS04.npz files into the PEMS04 folder under the dataset directory.
-- run feature_matrix.py and static_adj_matrix.py to generate PEMS04_cost_adj_matrix.pt, PEMS04_similarity_adj_matrix.pt, and PEMS04_w1_d1_h1.npz.
+
+- The dataset link is [Google Drive](https://drive.google.com/drive/folders/1qjtk8cjvnpc5M86muWlZQUXt6LUEQACr?usp=sharing) or [Caltrans PeMS](https://pems.dot.ca.gov./).
+- Taking PEMS04 as an example, you must place the downloaded PEMS04.csv and PEMS04.npz files into the PEMS04 folder under the dataset directory.
+- Run feature_matrix.py and static_adj_matrix.py to generate PEMS04_cost_adj_matrix.pt, PEMS04_similarity_adj_matrix.pt, and PEMS04_w1_d1_h1.npz.
 > feature_matrix.py based on the open-source project: [ASTGCN-2019-pytorch](https://github.com/guoshnBJTU/ASTGCN-2019-pytorch)
 
 ## Train
-___
+
 - on PEMS04 dataset:
   ```shell
   python train.py --dataset PEMS04
