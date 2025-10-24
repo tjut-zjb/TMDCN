@@ -5,6 +5,8 @@
   
   **Email**: [357238107@qq.com](mailto:357238107@qq.com)
 
+  **Paper**: [TMDCN](https://www.nature.com/articles/s41598-025-12598-z?utm_source=rct_congratemailt&utm_medium=email&utm_campaign=oa_20251007&utm_content=10.1038/s41598-025-12598-z)
+
 ## Figure
 
 <div style="text-align: center;">
@@ -99,13 +101,23 @@ To install pytorch-geometric, follow these steps:<br>
   python train.py --dataset PEMS08
   ```
 
-You can run this command to start tensorboard (for example, replace the specific training name) :
-```shell
-tensorboard --logdir=run/train/exp-1/tensorboard
-```
+- If you want to continue with the previous training, please modify the parameters of the configuration file (for example, replace the specific training name) :
+  ```
+  continue_training = True
+  continue_training_name = exp-1
+  ```
 
-If you want to continue with the previous training, please modify the parameters of the configuration file (for example, replace the specific training name) :
+## Cite
+If you find the paper useful, please cite as following:
 ```
-continue_training = True
-continue_training_name = exp-1
+@article{zhang2025traffic,
+  title={Traffic flow prediction based on temporal attention and multi-graph adjacency fusion using DynamicChebNet},
+  author={Zhang, Jingbao and Cheng, Junbing and Li, Fujia},
+  journal={Scientific Reports},
+  volume={15},
+  number={1},
+  pages={34864},
+  year={2025},
+  publisher={Nature Publishing Group UK London}
+}
 ```
