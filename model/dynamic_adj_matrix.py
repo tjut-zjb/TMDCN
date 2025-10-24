@@ -27,6 +27,9 @@ class DynamicAdjMatrix(nn.Module):
         # (B, N, N)
         A_d = torch.bmm(phi_X.transpose(1, 2), phi_X)
 
+        # matrix symmetry
+        A_d = (A_d + A_d.transpose(1, 2)) / 2
+
         A_d = F.relu(A_d)
         A_d = F.softmax(A_d, dim=-1)
 

@@ -63,20 +63,22 @@ def getSaveDir(save_path, save_name, continue_training, continue_training_name=N
 
 
 def set_seed(seed):
-    random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
     torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 
-def save_checkpoint(epoch, models, optimizer, best_val_loss,
+def save_checkpoint(epoch, models, optimizer, scheduler, best_val_loss,
                     val_avg_loss, val_avg_mae, val_avg_mape, val_avg_rmse,
                     save_dir, name):
     checkpoint = {
         'epoch': epoch,
         'models_state_dict': {name: model.state_dict() for name, model in models.items()},
         'optimizer_state_dict': optimizer.state_dict(),
+        'scheduler_state_dict': scheduler.state_dict(),
         'best_val_loss': best_val_loss,
     }
 

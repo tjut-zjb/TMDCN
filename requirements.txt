@@ -1,5 +1,5 @@
-fastdtw==0.3.4
-networkx==3.4.2
-numpy==1.25.2
-pandas==2.0.0
-scipy==1.15.1
+torch
+torch-geometric
+fastdtw
+pandas
+scipy

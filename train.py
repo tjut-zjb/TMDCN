@@ -18,7 +18,6 @@ from model.fusion_adj_matrix import FusionAdjacencyMatrix
 from model.fusion_feature_matrix import GatedFusion
 from model.multi_scale_conv import MultiScaleConvTemporalModel
 from model.temporal_attention import TemporalAttention
-from torch.utils.tensorboard import SummaryWriter
 
 # ================================ Prepare ================================
 args = config_loader.setTerminal()
@@ -83,13 +82,11 @@ logging.info(f"train_x.shape: {dataset['train_x'].shape} -> (B, N, F, T)")
 logging.info(f"train_target.shape: {dataset['train_target'].shape} -> (B, N, T)")
 # static adj matrix
 cost_adj_matrix = torch.load(cost_adj_matrix_dir).to(device)
+similarity_adj_matrix = torch.load(similarity_adj_matrix_dir).to(device)
 
-similarity_adj_matrix = torch.load(similarity_adj_matrix_dir)
-threshold = torch.quantile(similarity_adj_matrix, 0.75).item()
-similarity_adj_matrix = (similarity_adj_matrix > threshold).float().to(device)
 # log adj matrix shape
 logging.info(f"cost_adj_matrix.shape: {cost_adj_matrix.shape} -> (N, N)")
-logging.info(f"similarity_adj_matrix.shape: {similarity_adj_matrix.shape} -> (N, N) | threshold = {threshold}")
+logging.info(f"similarity_adj_matrix.shape: {similarity_adj_matrix.shape} -> (N, N)")
 
 # ================================ Build Models ================================
 _, _, num_features, time_steps = dataset['train_x'].shape
@@ -129,7 +126,6 @@ models = {
     'fc_output_layer': fc_output_layer,
 }
 
-writer = SummaryWriter(log_dir=os.path.join(save_dir, 'tensorboard'))
 set_seed(seed)
 criterion = nn.HuberLoss().to(device)
 optimizer = torch.optim.AdamW([param for layer in models.values() for param in layer.parameters()],
@@ -149,6 +145,7 @@ if continue_training:
     for name, model in models.items():
         model.load_state_dict(checkpoint['models_state_dict'][name])
     optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
     start_epoch = checkpoint['epoch'] + 1
     best_val_loss = checkpoint.get('best_val_loss', np.inf)
     logging.info(f"Checkpoint loaded, resuming from epoch {start_epoch + 1}")
@@ -171,47 +168,47 @@ for epoch in range(start_epoch, epochs):
     for b_idx, batch in enumerate(train_loader):
         train_x, train_target = batch
 
-        # 1.Data Embedding Layer
+        # 1. Data Embedding Layer
         # train_x_embed -> (B, N, T, embed_dim)
         train_x_embed = data_embedding_layer(train_x)
 
-        # 2.Temporal Feature Extraction Block
+        # 2. Temporal Feature Extraction Block
         # feature_matrix_fusion -> (B, N, T, embed_dim)
         input_week, input_day, input_hour = torch.split(train_x_embed, num_predict, dim=-2)
 
-        # 2.1.Temporal Attention Layer
+        # 2.1 Temporal Attention Layer
         output_week_TA = temporal_attention_week(input_week)
         output_day_TA = temporal_attention_day(input_day)
         output_hour_TA = temporal_attention_hour(input_hour)
 
-        # 2.2.Multi Scale Conv Layer
+        # 2.2 Multi Scale Conv Layer
         output_week_MC = multi_scale_conv_week(input_week)
         output_day_MC = multi_scale_conv_day(input_day)
         output_hour_MC = multi_scale_conv_hour(input_hour)
 
-        # 2.3.Concat
+        # 2.3 Concat
         feature_matrix_TA = torch.cat([output_week_TA, output_day_TA, output_hour_TA], dim=-2)
         feature_matrix_MC = torch.cat([output_week_MC, output_day_MC, output_hour_MC], dim=-2)
 
-        # 3.Gated Fusion
+        # 3. Gated Fusion
         feature_matrix_fusion = fusion_feature_matrix_layer(feature_matrix_TA, feature_matrix_MC)
         feature_matrix_fusion = feature_matrix_fusion + train_x_embed
 
-        # 4.Multi Adjacency Matrix Fusion
+        # 4. Multi Adjacency Matrix Fusion
         # adj_matrix_fusion -> (B, N, N)
 
-        # 4.1.Dynamic Adjacency Matrix
+        # 4.1 Dynamic Adjacency Matrix
         X_flow = train_x[:, :, 0, :]
         dynamic_adj_matrix = dynamic_adj_matrix_layer(X_flow)
 
-        # 4.2.Fusion Adj Matrix
+        # 4.2 Fusion Adj Matrix
         adj_matrix_fusion = fusion_adj_matrix_layer(dynamic_adj_matrix)
 
-        # 5.Dynamic ChebNet
+        # 5. Dynamic ChebNet
         # output_gcn -> (B, N, gcn_output_dim)
         output_gcn = dynamic_gcn(feature_matrix_fusion, adj_matrix_fusion)
 
-        # 6.Fully Connected Decoding Layer
+        # 6. Fully Connected Decoding Layer
         # train_output -> (B, N, T)
         train_output = fc_output_layer(output_gcn)
 
@@ -251,11 +248,6 @@ for epoch in range(start_epoch, epochs):
                  f"MAPE: {train_avg_mape:.2f} | "
                  f"RMSE: {train_avg_rmse:.2f} | "
                  f"Time: {train_time:.2f}s")
-
-    writer.add_scalar('Train/Loss', train_avg_loss, epoch + 1)
-    writer.add_scalar('Train/MAE', train_avg_mae, epoch + 1)
-    writer.add_scalar('Train/MAPE', train_avg_mape, epoch + 1)
-    writer.add_scalar('Train/RMSE', train_avg_rmse, epoch + 1)
 
     # ================================ Validation ================================
     val_start_time = time.time()
@@ -318,11 +310,11 @@ for epoch in range(start_epoch, epochs):
 
     if val_avg_loss < best_val_loss:
         best_val_loss = val_avg_loss
-        save_checkpoint(epoch, models, optimizer, best_val_loss,
+        save_checkpoint(epoch, models, optimizer, scheduler, best_val_loss,
                         val_avg_loss, val_avg_mae, val_avg_mape, val_avg_rmse,
                         save_dir, name='best')
 
-    save_checkpoint(epoch, models, optimizer, best_val_loss,
+    save_checkpoint(epoch, models, optimizer, scheduler, best_val_loss,
                     val_avg_loss, val_avg_mae, val_avg_mape, val_avg_rmse,
                     save_dir, name='last')
 
@@ -334,10 +326,3 @@ for epoch in range(start_epoch, epochs):
                  f"MAPE: {val_avg_mape:.2f} | "
                  f"RMSE: {val_avg_rmse:.2f} | "
                  f"Time: {val_time:.2f}s")
-
-    writer.add_scalar('Validation/Loss', val_avg_loss, epoch + 1)
-    writer.add_scalar('Validation/MAE', val_avg_mae, epoch + 1)
-    writer.add_scalar('Validation/MAPE', val_avg_mape, epoch + 1)
-    writer.add_scalar('Validation/RMSE', val_avg_rmse, epoch + 1)
-
-writer.close()

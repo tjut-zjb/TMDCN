@@ -21,7 +21,6 @@ class TemporalAttentionLayer(nn.Module):
             nn.Linear(hidden_dim, embed_dim)
         )
 
-        self.dropout = nn.Dropout(dropout)
         self.layer_norm1 = nn.LayerNorm(embed_dim)
         self.layer_norm2 = nn.LayerNorm(embed_dim)
 
@@ -37,12 +36,10 @@ class TemporalAttentionLayer(nn.Module):
         # (B, N, T, T)
         attention_scores = torch.matmul(Q, K.transpose(-1, -2)) / math.sqrt(embed_dim)
         attention_weights = self.attention_dropout(self.softmax(attention_scores))
-
         # (B, N, T, embed_dim)
         attention_output = torch.matmul(attention_weights, V)
 
         X = self.layer_norm1(attention_output + X)
-
         feed_forward_output = self.feed_forward(X)
         X = self.layer_norm2(feed_forward_output + X)
 
